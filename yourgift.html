@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>DJ PAYPAL EXPERIENCE *SOLD OUT*</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAADq39UAAAAAANnMvgDj2tEAf1UrAKWHaQCMZj8AbDwMAO3j2gCpjXEAflMoAPPt5wDt5dwAgVctAJp4VwDKrpQAc0QWAP///wDNspkA/f38AHRGGABnNQQAoIBhAPz7+QCxl30A18m7AItlPwCefl4Ay7inALWdhQB3Sh0AajkJAI5pRADcyrgAsotlAHtQJAC6o4wA6d7TAIVcNADIq5AA9fDrAK+UegDz7ugAx6mNAIZeNgBlMgAAtZyEAHZJHACceVcAuKCJAKKDZABpOAcAcEASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEwMDAwAQEBAQEBAQEBAQEREREhMAEBAQEBAQEBAQEtLS0OCzAwAQEBAQEBAQEBLS0tHhEnMAEBAQEBAQEBAS0tLS0xDDAwAQEBAQEBAQEwLS0tBBEiMDAwMDAwMAEBAy0tLS0CERERESgAEjAwAQEtLS0tLS0tLRQmGAghMDABMC0tLS0tLS0tLQ0OKg8wATAtLS0FHCQyIC0tLy4lMAEDLS0tIBEREQMaLS0sFzABAS0tLSMZERERKS0tMxMwAQEwLS0HGxERERYtLRURMAEBMDQtLRAdCQ4KLS0GKwEBARItLS0tLS0tLTMfJAEBAQEBMC0tLS0tLS0tMAEBAcP/AACD/wAAAf8AAAH/AAAA/wAAAAMAAAABAACAAAAAgAAAAIAAAACAAAAAwAAAAMAAAADAAQAAwAMAAOAHAAA=" rel="icon" type="image/x-icon">
+		<style>
+			body{
+				margin:0px;
+				overflow:hidden;
+			}
+			#bottomcontent{
+				width:98%;
+				bottom:0;
+				right:1%;
+				text-align:right;
+				font-size:28px;
+				text-shadow:2px 2px 3px #000;
+				letter-spacing:2px;
+				position:fixed;
+			}
+			#soldout{
+				width:100%;
+				height:100%;
+				position:absolute;
+				background:#000;
+				top:0;
+				left:0;
+			}
+		</style>
+		<script src="scripts/jquery-1.11.3.min.js"></script>
+		<script>
+			$(document).ready(function(){
+	        	$("#soldout").show().delay(5000).fadeOut();
+			});
+		</script>
+	</head>
+	<body>
+		<script src="scripts/three.min.js"></script>
+		<script src="scripts/Detector.js"></script>
+		<script src="scripts/OrbitControls.js"></script>
+		<script src="scripts/Mirror.js"></script>
+		<script src="scripts/WaterShader.js"></script>
+		<script src="scripts/Projector.js"></script>
+		<script>
+			if (! Detector.webgl){
+				Detector.addGetWebGLMessage();
+				document.getElementById('container').innerHTML = "";
+			}
+
+			var container;
+			var camera, scene;
+			var object;
+			var objects = [];
+			var projector;
+			var renderer;
+			var parameters ={
+				width: 1024,
+				height: 1024,
+				widthSegments: 250,
+				heightSegments: 250,
+				depth: 1500,
+				param: 4,
+				filterparam: 1
+			};
+			var waterNormals;
+
+			init();
+			animate();
+
+			function init(){
+				container = document.createElement('div');
+				document.body.appendChild(container);
+
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 3000000);
+				camera.position.set(4000, 750, -400);
+
+				controls = new THREE.OrbitControls(camera);
+				controls.enablePan = false;
+				controls.minDistance = 1.0;
+				controls.maxDistance = 1.0;
+				controls.maxPolarAngle = 5;
+				controls.center.set(0, 950, 0);
+
+				scene.add(new THREE.AmbientLight(0xffffff));
+				var light = new THREE.DirectionalLight(0xffffff, 100);
+				light.position.set(- 1, 1, - 1);
+				scene.add(light);
+
+				var cubeMap = new THREE.CubeTexture([]);
+				cubeMap.format = THREE.RGBFormat;
+				var loader = new THREE.ImageLoader();
+				loader.load( 'images/soldoutbgsunset.png', function (image){
+					var getSide = function(x, y){
+						var size = 1024;
+						var canvas = document.createElement('canvas');
+						canvas.width = size;
+						canvas.height = size;
+						var context = canvas.getContext('2d');
+						context.drawImage(image, - x * size, - y * size);
+						return canvas;
+					};
+					cubeMap.images[ 0 ] = getSide( 2, 1 ); // px
+					cubeMap.images[ 1 ] = getSide( 0, 1 ); // nx
+					cubeMap.images[ 2 ] = getSide( 1, 0 ); // py
+					cubeMap.images[ 3 ] = getSide( 1, 2 ); // ny
+					cubeMap.images[ 4 ] = getSide( 1, 1 ); // pz
+					cubeMap.images[ 5 ] = getSide( 3, 1 ); // nz
+					cubeMap.needsUpdate = true;
+				});
+				var cubeShader = THREE.ShaderLib['cube'];
+				cubeShader.uniforms['tCube'].value = cubeMap;
+				var skyBoxMaterial = new THREE.ShaderMaterial({
+					fragmentShader: cubeShader.fragmentShader,
+					vertexShader: cubeShader.vertexShader,
+					uniforms: cubeShader.uniforms,
+					depthWrite: false,
+					side: THREE.BackSide
+				});
+				var skyBox = new THREE.Mesh(
+					new THREE.BoxGeometry(1000000, 1000000, 1000000),
+					skyBoxMaterial
+				);
+				scene.add(skyBox);
+
+				//geometry = new THREE.TetrahedronGeometry(2000, 0);
+				geometry = new THREE.TorusGeometry(1100, 400, 400, 400, 60.28);
+				material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading});
+				for (var i = 0; i < 1; i++){
+       				var object = new THREE.Mesh(geometry, material);
+			        object.position.x = -4000;
+			        object.position.y = Math.random() * i * 500 + i * 100;
+			        object.position.z = 400;
+			        object.rotation.y = -102;
+			 		switch(i){
+			            case 0:
+			                object.userData = {
+			                    URL: "http://luckymedia.s3.amazonaws.com/_RELEASES/DJ-PAYPAL-LADIES-NIGHT.mp3"
+			                };
+			                break;
+			            }
+ 					scene.add(object);
+ 					objects.push(object);
+ 				}
+
+				projector = new THREE.Projector();
+				renderer = new THREE.WebGLRenderer({antialias: true});
+    			renderer.setClearColor(0x001e0f, 1)
+    			renderer.setSize(window.innerWidth, window.innerHeight);
+				container.appendChild(renderer.domElement);
+
+				var waterLoader = new THREE.TextureLoader();
+				waterNormals = waterLoader.load('images/waternormals.jpg');
+				waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+				water = new THREE.Water(renderer, camera, scene,{
+					textureWidth:512,
+					textureHeight:512,
+					waterNormals: waterNormals,
+					alpha:1.0,
+					sunDirection:light.position.clone().normalize(),
+					sunColor:0xffff00,
+					waterColor:0x001e0f,
+					distortionScale:50.0,
+				});
+				mirrorMesh = new THREE.Mesh(
+					new THREE.PlaneBufferGeometry(parameters.width * 500, parameters.height * 500),
+					water.material
+				);
+				mirrorMesh.add(water);
+				mirrorMesh.rotation.x = - Math.PI * 0.5;
+				scene.add(mirrorMesh);
+
+			    window.addEventListener('resize', onWindowResize, false);
+			    document.addEventListener('mousedown', onDocumentMouseDown, false);
+			}
+
+			function onWindowResize(){
+			    camera.aspect = window.innerWidth/window.innerHeight;
+			    camera.updateProjectionMatrix();
+			    renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+
+			function onDocumentMouseDown(event){
+			    event.preventDefault();
+			    var vector = new THREE.Vector3(0,0,0);
+			    var raycaster = new THREE.Raycaster();
+			    var direction = new THREE.Vector3();
+			   	vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+				vector.unproject( camera );
+				raycaster.set( camera.position, vector.sub( camera.position ).normalize());
+			    var intersects = raycaster.intersectObjects(objects);
+			    if (intersects.length > 0){
+			        window.open((intersects[0].object.userData.URL), "_self");
+			    }
+			}
+
+			function animate(){
+				requestAnimationFrame(animate);
+				render();
+			}
+
+			function render(){
+				var time = performance.now() * 0.0001;
+				water.material.uniforms.time.value += 1.0 / 60.0;
+				water.render();
+				controls.update();
+				renderer.render( scene, camera );
+			}
+		</script>
+		<div id="bottomcontent">
+			<iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/231307940%3Fsecret_token%3Ds-60jA0&amp;color=ffffff&amp;inverse=false&amp;auto_play=true&amp;show_user=true" width="100%" height="20" frameborder="no" scrolling="no"></iframe>
+		</div>	
+		<div id="soldout">
+			<center>
+				<img src="images/SOLD-OUT-TEXT-SOLO.png" width=720>
+			</center>
+		</div>
+		<script>
+			function welcome(){
+	    		alert("Accept end-user agreement and install Lifestyle 7.7 update?");
+			}
+			
+	        var message = [ 'DJ PAYPAL EXPERIENCE *SOLD OUT* ',
+	                  ' PAYPAL EXPERIENCE *SOLD OUT* DJ',
+	                  'AYPAL EXPERIENCE *SOLD OUT* DJ  P',
+	                  'PAL EXPERIENCE *SOLD OUT* DJ  PAY',
+	                  ' EXPERIENCE *SOLD OUT* DJ  PAYPAL',
+	                  'PERIENCE *SOLD OUT* DJ  PAYPAL EX',
+	                  'IENCE *SOLD OUT* DJ  PAYPAL EXPER',
+	                  'CE *SOLD OUT* DJ  PAYPAL EXPERIEN',
+	                  '*SOLD OUT* DJ  PAYPAL EXPERIENCE ',
+	                  ' OUT* DJ  PAYPAL EXPERIENCE *SOLD',
+	                  'T* DJ  PAYPAL EXPERIENCE *SOLD OU']; 
+	        var i = 0; 
+	        function animateTitle(){
+	          i >= message.length - 1 ? i = 0 : i++; 
+	          document.title = message[i];
+	          setTimeout('animateTitle()', 500);
+			}
+
+			function popUp1(mylink, windowname){
+	          if (! window.focus)return true;
+	          var href;
+	          if (typeof(mylink) == 'string')
+	          href=mylink;
+	          else
+	          href=mylink.href;
+	          window.open(href, windowname, 'width=480,height=380,top=300, left=100');
+	          return false;
+       		}
+
+       		function popUp2(mylink, windowname){
+	          if (! window.focus)return true;
+	          var href;
+	          if (typeof(mylink) == 'string')
+	          href=mylink;
+	          else
+	          href=mylink.href;
+	          window.open(href, windowname, 'width=300,height=213,top=500, left=700');
+	          return false;
+       		}
+
+       		function popUp3(mylink, windowname){
+	          if (! window.focus)return true;
+	          var href;
+	          if (typeof(mylink) == 'string')
+	          href=mylink;
+	          else
+	          href=mylink.href;
+	          window.open(href, windowname, 'width=312,height=400,top=100, left=960');
+	          return false;
+       		}
+
+       		function popUp4(mylink, windowname){
+	          if (! window.focus)return true;
+	          var href;
+	          if (typeof(mylink) == 'string')
+	          href=mylink;
+	          else
+	          href=mylink.href;
+	          window.open(href, windowname, 'width=320,height=289,top=400, left=420');
+	          return false;
+       		}
+
+			if(!(/iPhone|iPad|iPod|Android|webOS|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent))){
+				window.onload=animateTitle(), popUp1("karaoke.html","*SOLD OUT*"), popUp2("numbas.html","10%"), popUp3("underarmour.html","UNDER ARMOUR FANCY TINT SUIT"), popUp4("insecurity.html","INSECURITY BLING");
+			}else{
+				window.onload=animateTitle();
+			}
+		</script>	
+	</body>
+</html>
+<!--
+WEBSITE BY EMILIE GERVAIS
+http://emiliegervais.com
+
+ART BY SAM LUBICZ
+http://samlubicz.com
+-->

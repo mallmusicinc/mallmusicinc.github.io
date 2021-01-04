@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>DJ PAYPAL EXPERIENCE *SOLD OUT*</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0">
+	<link href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAADq39UAAAAAANnMvgDj2tEAf1UrAKWHaQCMZj8AbDwMAO3j2gCpjXEAflMoAPPt5wDt5dwAgVctAJp4VwDKrpQAc0QWAP///wDNspkA/f38AHRGGABnNQQAoIBhAPz7+QCxl30A18m7AItlPwCefl4Ay7inALWdhQB3Sh0AajkJAI5pRADcyrgAsotlAHtQJAC6o4wA6d7TAIVcNADIq5AA9fDrAK+UegDz7ugAx6mNAIZeNgBlMgAAtZyEAHZJHACceVcAuKCJAKKDZABpOAcAcEASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEwMDAwAQEBAQEBAQEBAQEREREhMAEBAQEBAQEBAQEtLS0OCzAwAQEBAQEBAQEBLS0tHhEnMAEBAQEBAQEBAS0tLS0xDDAwAQEBAQEBAQEwLS0tBBEiMDAwMDAwMAEBAy0tLS0CERERESgAEjAwAQEtLS0tLS0tLRQmGAghMDABMC0tLS0tLS0tLQ0OKg8wATAtLS0FHCQyIC0tLy4lMAEDLS0tIBEREQMaLS0sFzABAS0tLSMZERERKS0tMxMwAQEwLS0HGxERERYtLRURMAEBMDQtLRAdCQ4KLS0GKwEBARItLS0tLS0tLTMfJAEBAQEBMC0tLS0tLS0tMAEBAcP/AACD/wAAAf8AAAH/AAAA/wAAAAMAAAABAACAAAAAgAAAAIAAAACAAAAAwAAAAMAAAADAAQAAwAMAAOAHAAA=" rel="icon" type="image/x-icon" />
+	<style type="text/css">@font-face{
+				font-family:couture;
+				src:url('fonts/couture-bld.ttf');
+			}
+			body{
+				margin:0px;
+				overflow:hidden;
+				font-family:couture;
+				color:white;
+			}
+			a{
+				color:white;
+			}
+			a:hover{
+				text-decoration:none;
+			}
+			#topleft{
+				width:98%;
+				top:1%;
+				left:1%;
+				text-align:left;
+				letter-spacing:2px;
+				position:fixed;
+			}
+			#bottomcontent{
+				width:98%;
+				bottom:0;
+				right:1%;
+				text-align:right;
+				font-size:28px;
+				text-shadow:2px 2px 3px #000;
+				letter-spacing:2px;
+				position:fixed;
+			}
+			#soldout{
+				width:100%;
+				height:100%;
+				position:absolute;
+				background:#000;
+				top:0;
+				left:0;
+			}
+	</style>
+</head>
+<body><script src="scripts/three.min.js"></script><script src="scripts/Detector.js"></script><script src="scripts/OrbitControls.js"></script><script src="scripts/Mirror.js"></script><script src="scripts/WaterShader.js"></script><script src="scripts/jquery-1.11.3.min.js"></script><script>
+			if (! Detector.webgl){
+				Detector.addGetWebGLMessage();
+				document.getElementById('container').innerHTML = "";
+			}
+
+			var container;
+			var camera, scene;
+			var meshhes;
+			var cnt = 0;
+			var meshheses = [];
+			var renderer;
+			var parameters ={
+				width: 1024,
+				height: 1024,
+				widthSegments: 250,
+				heightSegments: 250,
+				depth: 1500,
+				param: 4,
+				filterparam: 1
+			};
+			var waterNormals;
+
+			init();
+			animate();
+
+			function init(){
+				container = document.createElement('div');
+				document.body.appendChild(container);
+
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 3000000);
+				camera.position.set(4000, 750, -400);
+
+				controls = new THREE.OrbitControls(camera);
+				controls.enablePan = false;
+				controls.minDistance = 1.0;
+				controls.maxDistance = 1.0;
+				controls.maxPolarAngle = 5;
+				controls.center.set(0, 950, 0);
+
+				scene.add(new THREE.AmbientLight(0xffffff));
+				var light = new THREE.DirectionalLight(0xffffff, 100);
+				light.position.set(- 1, 1, - 1);
+				scene.add(light);
+
+				var cubeMap = new THREE.CubeTexture([]);
+				cubeMap.format = THREE.RGBFormat;
+				var loader = new THREE.ImageLoader();
+				loader.load( 'images/soldoutbg.png', function (image){
+					var getSide = function(x, y){
+						var size = 1024;
+						var canvas = document.createElement('canvas');
+						canvas.width = size;
+						canvas.height = size;
+						var context = canvas.getContext('2d');
+						context.drawImage(image, - x * size, - y * size);
+						return canvas;
+					};
+					cubeMap.images[ 0 ] = getSide( 2, 1 ); // px
+					cubeMap.images[ 1 ] = getSide( 0, 1 ); // nx
+					cubeMap.images[ 2 ] = getSide( 1, 0 ); // py
+					cubeMap.images[ 3 ] = getSide( 1, 2 ); // ny
+					cubeMap.images[ 4 ] = getSide( 1, 1 ); // pz
+					cubeMap.images[ 5 ] = getSide( 3, 1 ); // nz
+					cubeMap.needsUpdate = true;
+				});
+				var cubeShader = THREE.ShaderLib['cube'];
+				cubeShader.uniforms['tCube'].value = cubeMap;
+				var skyBoxMaterial = new THREE.ShaderMaterial({
+					fragmentShader: cubeShader.fragmentShader,
+					vertexShader: cubeShader.vertexShader,
+					uniforms: cubeShader.uniforms,
+					depthWrite: false,
+					side: THREE.BackSide
+				});
+				var skyBox = new THREE.Mesh(
+					new THREE.BoxGeometry(1000000, 1000000, 1000000),
+					skyBoxMaterial
+				);
+				scene.add(skyBox);
+
+				for (var i = 0; i < 777; i++){
+					geometry = new THREE.TetrahedronGeometry(400, 0);
+					material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading});
+					meshhes = new THREE.Mesh(geometry, material);
+					meshhes.position.x = Math.random() * 10000 * Math.PI;
+					meshhes.position.y = Math.random() * 15000 * Math.PI;
+					meshhes.position.z = Math.random() * 17000 * Math.PI;
+					meshhes.rotation.x = Math.random() * 2 * Math.PI;
+					meshhes.rotation.y = Math.random() * 2 * Math.PI;
+					meshhes.rotation.z = Math.random() * 2 * Math.PI;
+					scene.add(meshhes);
+					meshheses[cnt] = meshhes;
+					cnt += 1;
+				}
+
+				renderer = new THREE.WebGLRenderer({antialias: true});
+    			renderer.setClearColor(0x001e0f, 1)
+    			renderer.setSize(window.innerWidth, window.innerHeight);
+				container.appendChild(renderer.domElement);
+
+				var waterLoader = new THREE.TextureLoader();
+				waterNormals = waterLoader.load('images/waternormals.jpg');
+				waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+				water = new THREE.Water(renderer, camera, scene,{
+					textureWidth:512,
+					textureHeight:512,
+					waterNormals: waterNormals,
+					alpha:1.0,
+					sunDirection:light.position.clone().normalize(),
+					sunColor:0xfdb813,
+					waterColor:0x001e0f,
+					distortionScale:50.0,
+				});
+				mirrorMesh = new THREE.Mesh(
+					new THREE.PlaneBufferGeometry(parameters.width * 500, parameters.height * 500),
+					water.material
+				);
+				mirrorMesh.add(water);
+				mirrorMesh.rotation.x = - Math.PI * 0.5;
+				scene.add(mirrorMesh);
+
+			    window.addEventListener('resize', onWindowResize, false);
+			}
+
+			function onWindowResize(){
+			    camera.aspect = window.innerWidth/window.innerHeight;
+			    camera.updateProjectionMatrix();
+			    renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+
+			function animate(){
+				requestAnimationFrame(animate);
+				render();
+			}
+
+			function render(){
+				var time = performance.now() * 0.0001;	
+
+				for (i = 0; i<cnt; i++){
+					meshhes = meshheses[i];
+					meshhes.position.y = Math.sin(time) * 500 + 250;
+					meshhes.rotation.x = time * 0.5;
+					meshhes.rotation.y = time * 0.5;
+					meshhes.rotation.z = time * 0.5;
+				}
+				water.material.uniforms.time.value += 1.0 / 60.0;
+				water.render();
+				controls.update();
+				renderer.render( scene, camera );
+			}
+		</script>
+<div id="topleft"><a href="http://mallmusicinc.bandcamp.com" target="_blank"><img src="logos/mallmusicblack.png" width="24" /></a> <a href="http://brainfeedersite.com" target="_blank"><img src="logos/brainfeeder.png" width="24" /></a> <a href="http://teklife57.com" target="_blank"><img src="logos/teklife.png" width="24" /></a> <a href="http://facebook.com/djpaypal" target="_blank"><img src="logos/facebook.png" width="24" /></a> <a href="http://twitter.com/djpaypal" target="_blank"><img src="logos/twitter.png" width="24" /></a> <a href="http://found.ee/soldout-sp" target="_blank"><img src="logos/spotify.png" width="24" /></a></div>
+
+<div id="bottomcontent"><strike>SOLD OUT ON <a href="http://djpaypal.bandcamp.com/album/sold-out" target="_blank">VINYL</a></strike><br />
+BUY ON <a href="http://found.ee/soldout-it" target="_blank">ITUNES</a> <a href="https://bleep.com/release/64446-dj-paypal-sold-out" target="_blank">BLEEP</a> <a href="http://found.ee/soldout-gp" target="_blank">GOOGLE PLAY</a><iframe frameborder="no" height="20" scrolling="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/232648445%3Fsecret_token%3Ds-JCzkv&amp;color=ffffff&amp;inverse=false&amp;auto_play=true&amp;show_user=true" width="100%"></iframe></div>
+
+<div id="soldout">
+<center><img src="images/SOLD-OUT-TEXT-SOLO.png" width="720" /></center>
+</div>
+<script>
+			function welcome(){
+	    		alert("Accept end-user agreement and install Lifestyle 7.7 update?");
+			}
+			
+	        var message = [ 'DJ PAYPAL EXPERIENCE *SOLD OUT* ',
+	                  ' PAYPAL EXPERIENCE *SOLD OUT* DJ',
+	                  'AYPAL EXPERIENCE *SOLD OUT* DJ  P',
+	                  'PAL EXPERIENCE *SOLD OUT* DJ  PAY',
+	                  ' EXPERIENCE *SOLD OUT* DJ  PAYPAL',
+	                  'PERIENCE *SOLD OUT* DJ  PAYPAL EX',
+	                  'IENCE *SOLD OUT* DJ  PAYPAL EXPER',
+	                  'CE *SOLD OUT* DJ  PAYPAL EXPERIEN',
+	                  '*SOLD OUT* DJ  PAYPAL EXPERIENCE ',
+	                  ' OUT* DJ  PAYPAL EXPERIENCE *SOLD',
+	                  'T* DJ  PAYPAL EXPERIENCE *SOLD OU']; 
+	        var i = 0; 
+	        function animateTitle(){
+	          i >= message.length - 1 ? i = 0 : i++; 
+	          document.title = message[i];
+	          setTimeout('animateTitle()', 500);
+			}
+
+			function popUp(mylink, windowname){
+	          if (! window.focus)return true;
+	          var href;
+	          if (typeof(mylink) == 'string')
+	          href=mylink;
+	          else
+	          href=mylink.href;
+	          window.open(href, windowname, 'width=388,height=480');
+	          return false;
+       		}
+
+	        window.onload=welcome(), animateTitle(), popUp("noscams.html","NO SCAMS");
+			
+			$(document).ready(function(){
+	        	$("#soldout").show().delay(12000).fadeOut();
+			});
+		</script></body>
+</html>
